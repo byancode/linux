@@ -128,5 +128,5 @@ git init
 gh repo create $(echo $1) --private --source=. --remote=upstream
 git add .
 git commit -m "first commit"
-git push
+git push --set-upstream upstream master
 ' >> ~/bin/ghc && chmod +x ~/bin/ghc
