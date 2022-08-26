@@ -2,7 +2,7 @@
 GITHUB_REPO="https://raw.githubusercontent.com/byancode/linux"
 DISTRO=$(cat /etc/os-release | grep "^ID=" | cut -d= -f2)
 
-bash <(curl $GITHUB_REPO/main/distros/$DISTRO)
+bash <(curl $GITHUB_REPO/master/distros/$DISTRO)
 
 # CREATE FOLDERS
 mkdir ~/files
@@ -25,8 +25,9 @@ curl -fsSL https://get.docker.com/rootless | sh
 
 # HTTPTOOLKIT
 HTTPTOOLKIT_VERSION=1.8.1
+mkdir ~/programs/HttpToolKit
 sudo wget https://github.com/httptoolkit/httptoolkit-desktop/releases/download/v${HTTPTOOLKIT_VERSION}/HttpToolkit-linux-x64-${HTTPTOOLKIT_VERSION}.zip
-unzip HttpToolkit-linux-x64-${HTTPTOOLKIT_VERSION}.zip -d ~/programs
+unzip HttpToolkit-linux-x64-${HTTPTOOLKIT_VERSION}.zip -d ~/programs/HttpToolKit
 
 # NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
@@ -55,17 +56,6 @@ bash -c "$(wget -qO- https://raw.githubusercontent.com/harry-cpp/code-nautilus/m
 # download wallpaper
 curl -fsSL "$GITHUB_REPO/main/wallpapers/ultrawide.jpg" > ~/files/ultrawide.jpg
 curl -fsSL "$GITHUB_REPO/main/wallpapers/laptop.jpg" > ~/files/laptop.jpg
-
-# set background gnome
-gsettings set org.gnome.desktop.background picture-uri "$HOME/files/ultrawide.jpg"
-
-# set to background adjust zoom
-gsettings set org.gnome.desktop.background picture-options "zoom"
-
-# set to dark mode
-gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
-gsettings set org.gnome.desktop.interface icon-theme "Adwaita"
-gsettings set org.gnome.desktop.interface cursor-theme "Adwaita"
 
 
 # download and install JetBrain Mono font from Google Fonts
@@ -130,3 +120,9 @@ git add .
 git commit -m "first commit"
 git push --set-upstream upstream master
 ' >> ~/bin/ghc && chmod +x ~/bin/ghc
+
+
+echo '
+# Add this to .bashrc or .zshrc or its equivalent
+transfer(){ if [ $# -eq 0 ];then echo "No arguments specified.\nUsage:\n transfer <file|directory>\n ... | transfer <file_name>">&2;return 1;fi;if tty -s;then file="$1";file_name=$(basename "$file");if [ ! -e "$file" ];then echo "$file: No such file or directory">&2;return 1;fi;if [ -d "$file" ];then file_name="$file_name.zip" ,;(cd "$file"&&zip -r -q - .)|curl --progress-bar --upload-file "-" "https://transfer.sh/$file_name"|tee /dev/null,;else cat "$file"|curl --progress-bar --upload-file "-" "https://transfer.sh/$file_name"|tee /dev/null;fi;else file_name=$1;curl --progress-bar --upload-file "-" "https://transfer.sh/$file_name"|tee /dev/null;fi;}
+' >> ~/.bashrc
